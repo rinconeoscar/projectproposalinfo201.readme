@@ -1,0 +1,33 @@
+#final project checkpoint 1
+library(dplyr)
+library(stringr)
+library(testthat)
+install.packages("xlsx")
+library("xlsx")
+
+#Load in datasets
+df_1 <- read.csv("player_stats.csv")
+df_2 <- read_excel("Val.xlsx")
+
+val_1 <- df_1
+val_2 <- df_2
+
+
+#rename column K:D to KD
+colnames(val_2)[6] = "KD"
+colnames(val_1)[6] = "K"
+
+#merge
+df <- merge(val_1, val_2, by = "KD")
+
+#categorical variable - North American
+Players (TRUE, FALSE)
+NA_teams <- c("EG","SEN","NRG","100T","C9")
+df$NA_player <- str_detect(df$Player.y, "EG|SEN|NRG|100T|C9")
+
+#numerical Variable - Kills + Assists
+df <- mutate(df, total_KA = cumsum((df$K.x + df$A.x)))
+
+#summarize
+group_ACS <- group_by(df, ACS.Map, ACS)
+averages_ACS <- summarize(df, total_ACS = sum(df$ACS + df$ACS.Map), average_value = mean(df$ACS + df$ACS.Map))
